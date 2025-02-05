@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
+import styles from "./styles";
 
 const RoomPage = () => {
   const socket = useSocket();
@@ -86,6 +87,9 @@ const RoomPage = () => {
     });
   }, []);
 
+  console.log('myStream', myStream);
+  console.log('remoteStream', remoteStream);
+
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
     socket.on("incomming:call", handleIncommingCall);
@@ -110,34 +114,46 @@ const RoomPage = () => {
   ]);
 
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
+    <div style={styles.container}>
+      <h1 style={styles.title}>Room Page</h1>
+      <h4 style={styles.status}>
+        {remoteSocketId ? "Connected" : "No one in room"}
+      </h4>
       {myStream && (
-        <>
-          <h1>My Stream</h1>
+        <button style={styles.button} onClick={sendStreams}>
+          Send Stream
+        </button>
+      )}
+      {remoteSocketId && (
+        <button style={styles.button} onClick={handleCallUser}>
+          CALL
+        </button>
+      )}
+      {myStream && (
+        <div style={styles.videoContainer}>
+          <h1 style={styles.videoLabel}>You</h1>
           <ReactPlayer
             playing
             muted
-            height="100px"
-            width="200px"
+            height="300px"
+            width="500px"
             url={myStream}
+            style={styles.video}
           />
-        </>
+        </div>
       )}
       {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
+        <div style={styles.videoContainer}>
+          <h1 style={styles.videoLabel}>Stranger</h1>
           <ReactPlayer
             playing
             muted
-            height="100px"
-            width="200px"
+            height="300px"
+            width="500px"
             url={remoteStream}
+            style={styles.video}
           />
-        </>
+        </div>
       )}
     </div>
   );
